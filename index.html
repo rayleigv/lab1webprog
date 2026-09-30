@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Лабораторная работа №1</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/form.css">
+</head>
+<body>
+<table id="layout">
+    <!-- Шапка -->
+    <tr>
+        <td colspan="2" id="header">
+            <span class="header-item">ФИО: Арианто Афифах Зулфа</span>
+            <span class="header-item">Группа: P3231</span>
+            <span class="header-item">Вариант: 22706</span>
+        </td>
+    </tr>
+
+    <!-- График и форма -->
+    <tr>
+        <td class="panel" id="graph-cell">
+            <canvas id="graph" width="400" height="400">Ваш браузер не поддерживает Canvas</canvas>
+        </td>
+        <td class="panel" id="form-cell">
+            <form id="point-form" novalidate>
+                <table class="form-table">
+                    <tr>
+                        <td class="label">X:</td>
+                        <td>
+                            <input type="text" id="x" name="x" maxlength="10" autocomplete="off"
+                                   placeholder="число в интервале (-3; 5)">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">Y:</td>
+                        <td class="radio-group">
+                            <label><input type="radio" name="y" value="-5">-5</label>
+                            <label><input type="radio" name="y" value="-4">-4</label>
+                            <label><input type="radio" name="y" value="-3">-3</label>
+                            <label><input type="radio" name="y" value="-2">-2</label>
+                            <label><input type="radio" name="y" value="-1">-1</label>
+                            <label><input type="radio" name="y" value="0">0</label>
+                            <label><input type="radio" name="y" value="1">1</label>
+                            <label><input type="radio" name="y" value="2">2</label>
+                            <label><input type="radio" name="y" value="3">3</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">R:</td>
+                        <td class="radio-group">
+                            <label><input type="radio" name="r" value="1">1</label>
+                            <label><input type="radio" name="r" value="2">2</label>
+                            <label><input type="radio" name="r" value="3">3</label>
+                            <label><input type="radio" name="r" value="4">4</label>
+                            <label><input type="radio" name="r" value="5">5</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" id="error" class="error"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <button type="submit" id="submit-btn">Проверить</button>
+                            <button type="button" id="clear-btn">Очистить таблицу</button>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </td>
+    </tr>
+
+    <!-- Таблица результатов -->
+    <tr>
+        <td colspan="2" class="panel">
+            <table id="results">
+                <thead>
+                <tr>
+                    <th>X</th>
+                    <th>Y</th>
+                    <th>R</th>
+                    <th>Результат</th>
+                    <th>Дата и время проверки</th>
+                </tr>
+                </thead>
+                <tbody id="results-body"></tbody>
+            </table>
+        </td>
+    </tr>
+</table>
+
+<script src="js/main.js"></script>
+</body>
+</html>

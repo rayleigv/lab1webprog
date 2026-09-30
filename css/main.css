@@ -1,0 +1,98 @@
+/*
+ * Наследование: font-family и color задаются у body
+ * и наследуются всеми вложенными элементами.
+ */
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    color: #222;
+    background-color: #eef2f8;
+    margin: 0;
+}
+
+/* Табличная вёрстка страницы (селектор идентификатора) */
+#layout {
+    width: 90%;
+    margin: 2% auto;
+    border-collapse: separate;
+    border-spacing: 12px;
+}
+
+/* Селектор класса */
+.panel {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 16px;
+    vertical-align: top;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+/*
+ * Каскадирование: #header получает стили от body,
+ * но более специфичный селектор переопределяет шрифт, цвет и размер.
+ */
+#header {
+    font-family: fantasy;
+    color: #1f4e9c;
+    font-size: 26px;
+    text-align: center;
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.header-item {
+    margin: 0 2%;
+}
+
+#graph-cell {
+    width: 45%;
+    text-align: center;
+}
+
+canvas {
+    max-width: 100%;
+    border: 1px solid #ccd;
+    border-radius: 6px;
+}
+
+/* Таблица результатов */
+#results {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#results th,
+#results td {
+    border: 1px solid #ccd;
+    padding: 6px 10px;
+    text-align: center;
+}
+
+#results th {
+    background-color: #1f4e9c;
+    color: #fff;
+}
+
+/* Селекторы псевдоклассов */
+#results tbody tr:nth-child(even) {
+    background-color: #f5f7fc;
+}
+
+#results tbody tr:hover {
+    background-color: #e3ecff;
+}
+
+.hit {
+    color: #188038;
+    font-weight: bold;
+}
+
+.miss {
+    color: #c5221f;
+    font-weight: bold;
+}
+
+.empty {
+    color: #888;
+    font-style: italic;
+}

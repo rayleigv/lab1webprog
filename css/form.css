@@ -1,0 +1,84 @@
+/* Стили формы (отдельный файл) */
+
+.form-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.form-table td {
+    padding: 8px 4px;
+}
+
+.label {
+    font-weight: bold;
+    width: 15%;
+}
+
+/* Селекторы атрибутов */
+input[type="text"] {
+    width: 90%;
+    padding: 2% 3%;          /* отступы в процентах */
+    margin: 1% 0;
+    font-size: 16px;
+    border: 1px solid #aab;
+    border-radius: 4px;
+}
+
+input[type="text"]:focus {
+    outline: none;
+    border-color: #1f4e9c;
+    box-shadow: 0 0 0 2px rgba(31, 78, 156, 0.2);
+}
+
+input[type="text"].invalid {
+    border-color: #c5221f;
+    background-color: #fdecea;
+}
+
+input[type="radio"] {
+    margin: 0 4% 0 2%;       /* отступы в процентах */
+    cursor: pointer;
+}
+
+.radio-group label {
+    display: inline-block;
+    margin: 1% 2%;
+    cursor: pointer;
+}
+
+/* Псевдокласс :checked + соседний текст */
+.radio-group label:has(input:checked) {
+    color: #1f4e9c;
+    font-weight: bold;
+}
+
+button {
+    padding: 2% 5%;          /* отступы в процентах */
+    margin: 1% 2% 1% 0;
+    font-size: 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    color: #fff;
+}
+
+button[type="submit"] {
+    background-color: #1f4e9c;
+}
+
+button[type="button"] {
+    background-color: #777;
+}
+
+button:hover {
+    opacity: 0.85;
+}
+
+button:active {
+    transform: translateY(1px);
+}
+
+.error {
+    color: #c5221f;
+    min-height: 1.2em;
+}
