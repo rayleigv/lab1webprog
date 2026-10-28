@@ -162,34 +162,48 @@ function renderTable() {
 
 /* ===================== Canvas ===================== */
 
-const SIZE = canvas.width;
-const CENTER = SIZE / 2;
-const UNIT = SIZE * 0.4; // пикселей на R (график в условных единицах R)
+/*
+ * Масштаб холста постоянный (от -6 до 6), а область рисуется с настоящим R.
+ * Поэтому при смене R область динамически меняет размер
+ * (R = 1 — маленькая, R = 5 — большая), а подписи -R, -R/2, R/2, R
+ * сдвигаются вместе с ней.
+ */
+const SIZE = canvas.width;              // 400
+const CENTER = SIZE / 2;                // 200
+const MAX = 6;                          // оси от -6 до 6
+const UNIT = (CENTER - 16) / MAX;       // сколько пикселей в одной единице
 
 function toCanvasX(v) { return CENTER + v * UNIT; }
 function toCanvasY(v) { return CENTER - v * UNIT; }
 
-function drawArea() {
+// Текущий R из формы или null, если R не выбран
+function getCurrentR() {
+    const r = Number(getChecked("r"));
+    return r > 0 ? r : null;
+}
+
+function drawArea(selectedR) {
     ctx.clearRect(0, 0, SIZE, SIZE);
 
-    // Область (в долях R: R = 1)
-    ctx.fillStyle = "rgba(51, 136, 255, 0.85)";
+    // Если R не выбран, рисуем область-пример (как R = 4) бледным цветом
+    const r = selectedR || 4;
+    ctx.fillStyle = selectedR ? "rgba(51, 136, 255, 0.85)" : "rgba(51, 136, 255, 0.3)";
 
-    // Прямоугольник (III четверть)
-    ctx.fillRect(toCanvasX(-1), toCanvasY(0), UNIT, UNIT);
+    // Прямоугольник (III четверть): от (-R; 0) до (0; -R)
+    ctx.fillRect(toCanvasX(-r), toCanvasY(0), r * UNIT, r * UNIT);
 
-    // Треугольник (II четверть)
+    // Треугольник (II четверть): (-R; 0), (0; R/2), (0; 0)
     ctx.beginPath();
-    ctx.moveTo(toCanvasX(-1), toCanvasY(0));
-    ctx.lineTo(toCanvasX(0), toCanvasY(0.5));
+    ctx.moveTo(toCanvasX(-r), toCanvasY(0));
+    ctx.lineTo(toCanvasX(0), toCanvasY(r / 2));
     ctx.lineTo(toCanvasX(0), toCanvasY(0));
     ctx.closePath();
     ctx.fill();
 
-    // Четверть круга (I четверть)
+    // Четверть круга (I четверть), радиус R/2
     ctx.beginPath();
     ctx.moveTo(CENTER, CENTER);
-    ctx.arc(CENTER, CENTER, UNIT / 2, -Math.PI / 2, 0);
+    ctx.arc(CENTER, CENTER, (r / 2) * UNIT, -Math.PI / 2, 0);
     ctx.closePath();
     ctx.fill();
 
@@ -198,52 +212,64 @@ function drawArea() {
     ctx.fillStyle = "#000";
     ctx.lineWidth = 1.5;
     ctx.beginPath();
-    ctx.moveTo(10, CENTER); ctx.lineTo(SIZE - 10, CENTER);
-    ctx.moveTo(CENTER, SIZE - 10); ctx.lineTo(CENTER, 10);
+    ctx.moveTo(6, CENTER); ctx.lineTo(SIZE - 6, CENTER);
+    ctx.moveTo(CENTER, SIZE - 6); ctx.lineTo(CENTER, 6);
     ctx.stroke();
 
     // Стрелки
     ctx.beginPath();
-    ctx.moveTo(SIZE - 10, CENTER);
-    ctx.lineTo(SIZE - 20, CENTER - 5);
-    ctx.lineTo(SIZE - 20, CENTER + 5);
+    ctx.moveTo(SIZE - 6, CENTER);
+    ctx.lineTo(SIZE - 16, CENTER - 5);
+    ctx.lineTo(SIZE - 16, CENTER + 5);
     ctx.closePath();
-    ctx.moveTo(CENTER, 10);
-    ctx.lineTo(CENTER - 5, 20);
-    ctx.lineTo(CENTER + 5, 20);
+    ctx.moveTo(CENTER, 6);
+    ctx.lineTo(CENTER - 5, 16);
+    ctx.lineTo(CENTER + 5, 16);
     ctx.closePath();
     ctx.fill();
 
     ctx.font = "14px Arial";
-    ctx.fillText("x", SIZE - 18, CENTER - 10);
-    ctx.fillText("y", CENTER + 8, 18);
+    ctx.fillText("x", SIZE - 14, CENTER - 10);
+    ctx.fillText("y", CENTER + 10, 16);
 
-    // Деления и подписи
+    // Деления -R, -R/2, R/2, R. Они стоят в точках текущего R,
+    // поэтому при смене R подписи сдвигаются вместе с областью.
     const marks = [
-        { v: -1, t: "-R" }, { v: -0.5, t: "-R/2" },
-        { v: 0.5, t: "R/2" }, { v: 1, t: "R" }
+        { k: -1,   t: "-R"   },
+        { k: -0.5, t: "-R/2" },
+        { k: 0.5,  t: "R/2"  },
+        { k: 1,    t: "R"    }
     ];
-    ctx.font = "13px Arial";
+    ctx.font = "12px Arial";
+    ctx.lineWidth = 1;
     marks.forEach(m => {
-        const px = toCanvasX(m.v);
+        const px = toCanvasX(m.k * r);
+        const py = toCanvasY(m.k * r);
+
         ctx.beginPath();
         ctx.moveTo(px, CENTER - 4); ctx.lineTo(px, CENTER + 4);
-        ctx.stroke();
-        ctx.fillText(m.t, px - 10, CENTER - 8);
-
-        const py = toCanvasY(m.v);
-        ctx.beginPath();
         ctx.moveTo(CENTER - 4, py); ctx.lineTo(CENTER + 4, py);
         ctx.stroke();
-        ctx.fillText(m.t, CENTER + 8, py + 4);
+
+        // на оси X: R и -R под осью, R/2 и -R/2 над осью (чтобы не накладывались)
+        ctx.textAlign = "center";
+        const below = Math.abs(m.k) === 1;
+        ctx.fillText(m.t, px, below ? CENTER + 17 : CENTER - 8);
+        // на оси Y: подписи справа от оси
+        ctx.textAlign = "left";
+        ctx.fillText(m.t, CENTER + 7, py + 4);
     });
+    ctx.textAlign = "left";
+
+    // Подпись с текущим R
+    ctx.font = "bold 14px Arial";
+    ctx.fillText(selectedR ? `R = ${selectedR}` : "Выберите R", 10, 20);
 }
 
-// Точка рисуется относительно текущего R (график нарисован в долях R)
-function drawPoint(x, y, r, hit) {
-    const px = toCanvasX(x / r);
-    const py = toCanvasY(y / r);
-    if (px < 0 || px > SIZE || py < 0 || py > SIZE) return; // за пределами холста
+// Точка рисуется в настоящих координатах (без деления на R)
+function drawPoint(x, y, hit) {
+    const px = toCanvasX(x);
+    const py = toCanvasY(y);
     ctx.beginPath();
     ctx.arc(px, py, 4, 0, 2 * Math.PI);
     ctx.fillStyle = hit ? "#188038" : "#c5221f";
@@ -254,11 +280,11 @@ function drawPoint(x, y, r, hit) {
 }
 
 function redraw() {
-    drawArea();
-    const r = Number(getChecked("r"));
+    const r = getCurrentR();
+    drawArea(r);
     if (!r) return;
     // показываем точки, проверенные при текущем R
-    results.filter(p => p.r === r).forEach(p => drawPoint(p.x, p.y, p.r, p.hit));
+    results.filter(p => p.r === r).forEach(p => drawPoint(p.x, p.y, p.hit));
 }
 
 document.querySelectorAll('input[name="r"]').forEach(el =>
@@ -301,4 +327,4 @@ clearBtn.addEventListener("click", () => {
 /* ===================== Старт ===================== */
 
 renderTable();
-drawArea();
+redraw();
